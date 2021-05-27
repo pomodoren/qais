@@ -45,21 +45,31 @@ def api_filter():
             abort(400)
         for i in json_data:
             if not isinstance(i,dict) or\
-             set(i.keys()) != set(['competence','network ability','promoted']) or\
+             set(i.keys()) != set(['id','competence','network ability','promoted']) or\
              len([j for j in i.values() if not isinstance(j, (int, float))]):
                 abort(400)
+        for i in json_data:
+            try:
+                instance_ = Instance()
+                instance_.from_dict(i)
+                db.session.add(instance_)
+                db.session.commit()
+            except:
+                abort(400)
+
         # process
         return jsonify({
             "status":"success"
         })
-        
     # updating to not get errors
     page_str = query_parameters.get('page')
     if not page_str:
         abort(404)
     page = int(page_str)
-
-    return jsonify(results)
+    instances = Instance.query.paginate(
+            page, app.config['DOCUMENT_PER_PAGE'], False)
+    results = instances.items
+    return jsonify([i.to_dict() for i in results])
 
 
 

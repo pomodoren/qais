@@ -22,6 +22,12 @@ class Instance(db.Model):
             "network_ability": self.network_ability
         }
 
+    def from_dict(self,data):
+        for each in ['id','competence','network_ability','promoted']:
+            if each in data:
+                setattr(self,each,data[each])
+            
+
     def __repr__(self):
         return "<Instance {} - {} - {}>".format(
             self.competence.replace('\n',''), 
