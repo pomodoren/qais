@@ -1,2 +1,8 @@
 Flask~=1.1.2
 sklearn
+flask_script
+Flask-Migrate==2.5.3
+flask_cors
+redis
+rq
+python-dotenv
