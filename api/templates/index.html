@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.83.1">
+    <title>Streaming Pipeline Example</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/album/">
+
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{url_for('static',filename='bootstrap.min.css')}}" rel="stylesheet" crossorigin="anonymous">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+     google.charts.load('current', {'packages':['line']});
+      google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('number', 'Day');
+      data.addColumn('number', 'Guardians of the Galaxy');
+      data.addColumn('number', 'The Avengers');
+      data.addColumn('number', 'Transformers: Age of Extinction');
+
+      data.addRows([
+        [1,  37.8, 80.8, 41.8],
+        [2,  30.9, 69.5, 32.4],
+        [3,  25.4,   57, 25.7],
+        [4,  11.7, 18.8, 10.5],
+        [5,  11.9, 17.6, 10.4],
+        [6,   8.8, 13.6,  7.7],
+        [7,   7.6, 12.3,  9.6],
+        [8,  12.3, 29.2, 10.6],
+        [9,  16.9, 42.9, 14.8],
+        [10, 12.8, 30.9, 11.6],
+        [11,  5.3,  7.9,  4.7],
+        [12,  6.6,  8.4,  5.2],
+        [13,  4.8,  6.3,  3.6],
+        [14,  4.2,  6.2,  3.4]
+      ]);
+
+      var options = {
+        chart: {
+          title: 'Box Office Earnings in First Two Weeks of Opening',
+          subtitle: 'in millions of dollars (USD)'
+        }
+      };
+
+      var chart = new google.charts.Line(document.getElementById('linechart_material'));
+
+      chart.draw(data, google.charts.Line.convertOptions(options));
+    }
+
+    </script>
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+
+
+</head>
+
+<body>
+
+    <header>
+        <div class="collapse" id="navbarHeader">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-8 col-md-7 py-4">
+                        <h4 class="text-dark">About</h4>
+                        <p class="text-muted">
+                            We are QuickAlgorithm, thank you for checking with us.
+                        </p>
+                    </div>
+                    <div class="col-sm-4 offset-md-1 py-4">
+                        <h4 class="text-dark">Contact</h4>
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="text-dark">Follow on Twitter</a></li>
+                            <li><a href="#" class="text-dark">Email us</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="navbar navbar-light shadow-sm">
+            <div class="container">
+                <a href="#" class="navbar-brand d-flex align-items-center">
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                            class="bi bi-cpu" viewBox="0 0 16 16">
+                            <path
+                                d="M5 0a.5.5 0 0 1 .5.5V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2A2.5 2.5 0 0 1 14 4.5h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14a2.5 2.5 0 0 1-2.5 2.5v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14A2.5 2.5 0 0 1 2 11.5H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2A2.5 2.5 0 0 1 4.5 2V.5A.5.5 0 0 1 5 0zm-.5 3A1.5 1.5 0 0 0 3 4.5v7A1.5 1.5 0 0 0 4.5 13h7a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 11.5 3h-7zM5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5v-3zM6.5 6a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z" />
+                        </svg>&nbsp;<br>
+                        <small>&nbsp;</small>
+                    </span>
+                    <span>
+                        <strong><b style="color:blue;">QA</b> Internal Solutions</strong><br>
+                        <small style="font-size: small;">
+                            Monitor your hiring and promotion processes.
+                        </small>
+                    </span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader"
+                    aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- ======= Contact Section ======= -->
+        <section id="research" style="background-color:lightgoldenrodyellow;">
+            <br><br>
+            <div class="container" data-aos="fade-up">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="section-title">
+                            <h3>Promotion <span style="color:blue">Consistency</span> </h3>
+                        </div>
+                        <p>
+                            According to our models,
+                            your promotion process is <span class="badge" style="background-color:blue;">{{0}}%</span>
+                            consistent with the previous promotions, considering the following factors:
+                        </p>
+                        <p>
+                            <span class="badge" style="font-weight: bold;color:white;background-color: blue;">></span>
+                            Network Ability<br>
+                            <span class="badge" style="font-weight: bold;color:white;background-color: blue;">></span>
+                            Competence<br>
+                        </p>
+                        <br>
+                        <br><br>
+                    </div>
+                    <div class="col-md-8 mx-auto bg-white">
+                        <br> 
+                        <div id="linechart_material" style="width: 100%; max-height: 500px;min-height: 300px;"></div>
+                        
+                    </div>
+                    
+                </div>
+                <br><br>
+            </div>
+        </section>
+         <!-- ======= Contact Section ======= -->
+         <section id="research" style="background-color: lavenderblush;">
+            <br><br>
+            <div class="container" data-aos="fade-up">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="section-title">
+                            <h3>Continous <span style="color:blue">Insight</span> </h3>
+                        </div>
+                        <p>
+                            According to our <span class="badge" style="background-color:blue;">models</span>,
+                            your promotion process is <span class="badge" style="background-color:blue;">{{0}}%</span>
+                            consistent with the previous promotions, considering the following factors:
+                        </p>
+                        <p>
+                            <span class="badge" style="font-weight: bold;color:black;background-color: blue;">></span>
+                            Network Ability<br>
+                            <span class="badge" style="font-weight: bold;color:black;background-color: blue;">></span>
+                            Competence<br>
+                        </p>
+                        <br>
+                        <a class="btn btn-success" href="#"><i class="bi bi-gear-wide-connected"></i> More info?</a>
+                        <br><br><br><br>
+                    </div>
+                    <div class="col-md-8 mx-auto ">
+                        <div id="curve_chart" style="width: 100%; max-height: 500px"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="text-muted py-5">
+        <div class="container">
+            <p class="float-end mb-1">
+                <a href="#">Back to top</a>
+            </p>
+            <p class="mb-0">Interested in Quick-Algorithm news? <a href="/">Follow on Twitter.</a></p>
+        </div>
+    </footer>
+
+
+    <script src="{{url_for('static',filename='bootstrap.bundle.min.js')}}" crossorigin="anonymous"></script>
+
+
+</body>
+
+</html>
