@@ -6,3 +6,4 @@ flask_cors
 redis
 rq
 python-dotenv
+requests

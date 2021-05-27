@@ -42,11 +42,13 @@ def api_filter():
         json_data = request.get_json()
         # check if any issues with the data
         if not json_data or not isinstance(json_data, list):
+            print('issue previous')
             abort(400)
         for i in json_data:
             if not isinstance(i,dict) or\
-             set(i.keys()) != set(['id','competence','network ability','promoted']) or\
-             len([j for j in i.values() if not isinstance(j, (int, float))]):
+                set(i.keys()) != set(['id','competence','network_ability','promoted']) or\
+                len([j for j in i.values() if not isinstance(j, (int, float))]):
+                print('issue here')
                 abort(400)
         for i in json_data:
             try:
@@ -54,7 +56,8 @@ def api_filter():
                 instance_.from_dict(i)
                 db.session.add(instance_)
                 db.session.commit()
-            except:
+            except Exception as e:
+                print(e)
                 abort(400)
 
         # process
