@@ -8,7 +8,7 @@ import json
 from redis import Redis
 import rq, pickle
 
-from config import CONFIG
+from api.config import CONFIG
 
 migrate = Migrate()
 
@@ -25,7 +25,7 @@ app.task_queue = rq.Queue(
     serializer=pickle
 )
 
-from models import db, PredictionModel, Instance, Task
+from api.models import db, PredictionModel, Instance, Task
 
 db.init_app(app)
 migrate.init_app(app, db)
@@ -37,18 +37,16 @@ def home():
 @app.route('/api/v1/data', methods=['GET','POST'])
 def api_filter():
     query_parameters = request.args
-
+    PredictionModel.start_training()
     if request.method == 'POST':
         json_data = request.get_json()
         # check if any issues with the data
         if not json_data or not isinstance(json_data, list):
-            print('issue previous')
             abort(400)
         for i in json_data:
             if not isinstance(i,dict) or\
                 set(i.keys()) != set(['id','competence','network_ability','promoted']) or\
                 len([j for j in i.values() if not isinstance(j, (int, float))]):
-                print('issue here')
                 abort(400)
         for i in json_data:
             try:

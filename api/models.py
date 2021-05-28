@@ -42,6 +42,10 @@ class PredictionModel(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     archived = db.Column(db.Boolean, default=False)
 
+    # trained on which instances
+    page = db.Column(db.Integer)
+    instance_count = db.Column(db.Integer) 
+
     # specific
     n_train = db.Column(db.Integer)
     n_train_pos = db.Column(db.Integer)    
@@ -62,9 +66,40 @@ class PredictionModel(db.Model):
             if each in data:
                 setattr(self,each,data[field])
             
+    @classmethod
+    def start_training(cls):
+        """
+        when load batch of 10
+        - check if Instance.count == N 
+            - if yes, then train new model
+            - store model in PredictionModel Table
+        - check elif Instance.count() % N == 0 - if yes
+            - test existing model
+            - store stats results
+            - new model: train with the new N - this will wait for next input
+            - store new model in db
+        """ 
+
+        # get last model
+        last_model = PredictionModel.query.order_by(PredictionModel.timestamp.desc()).first()
+        # check if first time running a model
+        #if not last_model and Instance.query.count() > current_app.config['TRAIN_TEST_BATCH']:
+        print("Entered")
+        # create prediction model
+        new_model = PredictionModel()
+        new_model.page = 0
+        new_model.instance_count = current_app.config['TRAIN_TEST_BATCH']
+        db.session.add(new_model)
+        db.session.commit()
+
+        new_model.launch_task('run_model','partial fit the data')
+        #else:
+        # print('skip')
+
     def launch_task(self, name, description, *args, **kwargs):
+        print('launching?')
         rq_job = current_app.task_queue.enqueue(
-            "app.tasks." + name, self.id, *args, **kwargs
+            "api.tasks." + name, self.id, *args, **kwargs
         )
         task = Task(id=rq_job.get_id(), name=name, description=description, pm_id=self.id)
         db.session.add(task)

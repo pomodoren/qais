@@ -24,6 +24,8 @@ def send_request(data_list):
 
 # Main loop : iterate on mini-batchs of examples
 for i, json_dicts in enumerate(stream_bulks(data_full, BULK_SIZE)):
+    if i < 0:
+        continue
     response = send_request(json_dicts)
     print(response.content)
     break

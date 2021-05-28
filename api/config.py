@@ -22,6 +22,7 @@ class Config(object):
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DOCUMENT_PER_PAGE = 10
+    TRAIN_TEST_BATCH = 100
 
 class ProductionConfig(Config):
     DEBUG = False
