@@ -2,6 +2,7 @@ import json, sys, time
 from rq import get_current_job
 from api.app import app
 from api.models import db, Task, PredictionModel, Instance
+from api.pm_processing import describe_model
 from sqlalchemy import and_
 import pandas as pd 
 
@@ -38,10 +39,16 @@ def run_model(pm_id):
             .filter(Instance.id<ending_index)\
             .all()
         df = pd.DataFrame([i.to_dict() for i in all_instances])
-        print(df)
+        dataset = df[['competence','network_ability','promoted']] # skip id
+        X_train = dataset.iloc[:, :-1].values
+        y_train = dataset.iloc[:, -1].values
+
         # train model 
-        
-        # store parameters
+        model.partial_fit(X_train, y_train, classes=[0,1])
+
+        # extract parameters
+        print(describe_model('model',model,dataset.iloc[:, :-1],None))
+
     except Exception as e:
         app.logger.error('Unhandled exception', exc_info=sys.exc_info())
     _set_task_progress(100)

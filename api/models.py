@@ -93,6 +93,7 @@ class PredictionModel(db.Model):
         # print('skip')
 
     def launch_task(self, name, description, *args, **kwargs):
+        print("launching")
         rq_job = current_app.task_queue.enqueue(
             "api.tasks." + name, self.id, *args, **kwargs
         )
