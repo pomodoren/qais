@@ -27,7 +27,7 @@ if __name__ == '__main__':
         print(i)
         try:
             response = send_request(json_dicts)
-            print(response.status)
+            print(response.status_code)
         except Exception as e:
             print(e)
           
