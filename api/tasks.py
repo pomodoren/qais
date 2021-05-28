@@ -1,7 +1,9 @@
 import json, sys, time
 from rq import get_current_job
-from api import app, db
-from api.models import Task, PredictionModel, Instance
+from api.app import app
+from api.models import db, Task, PredictionModel, Instance
+from sqlalchemy import and_
+import pandas as pd 
 
 # ML tasks
 from sklearn.model_selection import train_test_split
@@ -29,18 +31,18 @@ def run_model(pm_id):
         model = SGDClassifier()
 
         # extract the necessary instances to train on
-        starting_index = pm.taskspage * app.config['DOCUMENT_PER_PAGE']
-        ending_index = starting_index + app.config['DOCUMENT_PER_PAGE']
+        starting_index = pm.page * app.config['TRAIN_TEST_BATCH']
+        ending_index = starting_index + app.config['TRAIN_TEST_BATCH']
         all_instances = Instance.query\
-            .filter_by(
-                Instance.id>=starting_index, 
-                Instance.id<ending_index
-            ).all()
+            .filter(Instance.id>=starting_index)\
+            .filter(Instance.id<ending_index)\
+            .all()
+        df = pd.DataFrame([i.to_dict() for i in all_instances])
+        print(df)
         # train model 
-        print(all_instances)
+        
         # store parameters
     except Exception as e:
-        flash(str(e))
         app.logger.error('Unhandled exception', exc_info=sys.exc_info())
     _set_task_progress(100)
         

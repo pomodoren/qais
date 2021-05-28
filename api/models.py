@@ -29,11 +29,7 @@ class Instance(db.Model):
             
 
     def __repr__(self):
-        return "<Instance {} - {} - {}>".format(
-            self.competence.replace('\n',''), 
-            self.promoted, 
-            self.network_ability
-        )
+        return "<Instance {}>".format(self.id)
 
 
 class PredictionModel(db.Model):
@@ -97,12 +93,12 @@ class PredictionModel(db.Model):
         # print('skip')
 
     def launch_task(self, name, description, *args, **kwargs):
-        print('launching?')
         rq_job = current_app.task_queue.enqueue(
             "api.tasks." + name, self.id, *args, **kwargs
         )
         task = Task(id=rq_job.get_id(), name=name, description=description, pm_id=self.id)
         db.session.add(task)
+        db.session.commit()
         return task
 
     def get_tasks_in_progress(self):
