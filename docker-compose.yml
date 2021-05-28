@@ -1,11 +1,37 @@
 version: '3'
 services:
-    api:
-        build: .
+    rq-server-interview:
+        container_name: rq-server-interview
+        image: "redis:alpine"
         ports:
-            - "5000:5000"
-        volumes:
-            - .:/web
+        - "6379:6379"
         environment:
-            - PORT:5000
+        - REDIS_REPLICATION_MODE=master      
 
+    api-interview:
+        build: ./api
+        command: gunicorn --bind 0.0.0.0:5000 app:app
+        image: master-image
+        volumes:
+            - ./api/:/app/
+        expose:
+            - 5000
+        env_file:
+            - ./.env
+
+    # WORKERS
+    worker:
+        image: master-image
+        env_file:
+            - ./.env
+        depends_on:
+            - rq-server-interview
+        command: python3 worker.py
+
+    nginx:
+        build: ./nginx
+        ports:
+            - 1337:80
+        depends_on:
+            - api-interview
+        

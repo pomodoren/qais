@@ -3,7 +3,7 @@ import requests
 import json
 
 BULK_SIZE = 1000
-SERVICE_URL = 'http://localhost:5000/api/v1/data'
+SERVICE_URL = 'http://localhost:1337/api/v1/data'
 data_path = 'data.csv'
 data_full = pd.read_csv(data_path,header=None)
 data_full.columns = ['id','competence','network_ability','promoted']
@@ -27,6 +27,7 @@ if __name__ == '__main__':
         print(i)
         try:
             response = send_request(json_dicts)
+            print(response.status)
         except Exception as e:
-            print(i+":\t"+e)
+            print(e)
           

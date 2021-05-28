@@ -7,3 +7,5 @@ redis
 rq
 python-dotenv
 requests
+pandas
+gunicorn

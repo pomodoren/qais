@@ -1,22 +1,18 @@
 from flask import Flask, request, jsonify, render_template, abort, redirect, url_for
 from flask_migrate import Migrate
 from flask_cors import CORS
-import sqlite3 as sqlite
-import sys
-import os
-import json
 from redis import Redis
-import rq, pickle
+import sqlite3 as sqlite
 import pandas as pd
-from api.config import CONFIG
+import sys, os, json
+import rq, pickle
 
+from config import CONFIG
 migrate = Migrate()
 
 app = Flask(__name__)
-
 app.config.from_object(CONFIG)
 CORS(app)  # This will enable CORS for all routes
-
 app.redis = Redis.from_url(app.config["REDIS_URL"])
 app.task_queue = rq.Queue(
     "model-tasks", 
@@ -25,8 +21,7 @@ app.task_queue = rq.Queue(
     serializer=pickle
 )
 
-from api.models import db, PredictionModel, Instance, Task
-
+from models import db, PredictionModel, Instance, Task
 db.init_app(app)
 migrate.init_app(app, db)
 
@@ -51,14 +46,16 @@ def api_filter():
     
     if request.method == 'POST':
         json_data = request.get_json()
-        # check if any issues with the data
-        if not json_data or not isinstance(json_data, list):
-            abort(400)
-        for i in json_data:
-            if not isinstance(i,dict) or\
-                set(i.keys()) != set(['id','competence','network_ability','promoted']) or\
-                len([j for j in i.values() if not isinstance(j, (int, float))]):
+        # basic checks
+        try:
+            if not json_data or \
+                not isinstance(json_data, list):
                 abort(400)
+            df = pd.DataFrame(json_data)  
+            if set(df.columns) != set(['id','competence','network_ability','promoted']):
+                abort(400)
+        except Exception as e:
+            abort(400)
         data_instances = []
         for i in json_data:
             try:

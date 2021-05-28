@@ -1,9 +1,9 @@
-import json, sys, time
-from rq import get_current_job
-from api.app import app
-from api.models import db, Task, PredictionModel, Instance
-from api.pm_processing import describe_model
+from app import app
+from models import db, Task, PredictionModel, Instance
+from pm_processing import describe_model
 from sqlalchemy import and_
+from rq import get_current_job
+import json, sys, time
 import pandas as pd 
 import pickle 
 
