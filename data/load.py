@@ -21,10 +21,12 @@ def send_request(data_list):
     response = requests.post(SERVICE_URL, json=json.loads(data_list))
     return response
 
-
-# Main loop : iterate on mini-batchs of examples
-for i, json_dicts in enumerate(stream_bulks(data_full, BULK_SIZE)):
-    if i > 20:
-        response = send_request(json_dicts)
-        if i > 30:
-            break
+if __name__ == '__main__':
+    # Main loop : iterate on mini-batchs of examples
+    for i, json_dicts in enumerate(stream_bulks(data_full, BULK_SIZE)):
+        print(i)
+        try:
+            response = send_request(json_dicts)
+        except Exception as e:
+            print(i+":\t"+e)
+          

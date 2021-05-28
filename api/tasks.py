@@ -73,6 +73,7 @@ def run_model(pm_id):
         pm.pickle_obj = pickle_obj
 
         db.session.commit()
+        
     except Exception as e:
         app.logger.error('Unhandled exception', exc_info=sys.exc_info())
     _set_task_progress(100)
