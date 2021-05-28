@@ -24,10 +24,10 @@ def send_request(data_list):
 if __name__ == '__main__':
     # Main loop : iterate on mini-batchs of examples
     for i, json_dicts in enumerate(stream_bulks(data_full, BULK_SIZE)):
-        print(i)
+        
         try:
             response = send_request(json_dicts)
-            print(response.status_code)
+            print("Size: "+str((i+1)*BULK_SIZE) + "\t\tResponse:" + str(response.status_code))
         except Exception as e:
             print(e)
           
