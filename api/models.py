@@ -48,10 +48,15 @@ class PredictionModel(db.Model):
     model_type = db.Column(db.String) 
     model = db.Column(db.String)
     train_size = db.Column(db.Integer)
-    total_fit_time = db.Column(db.Float)
+
+    # additional for better pictures
+    train_pos = db.Column(db.Integer)
+    train_time = db.Column(db.Float)
+    test_pos = db.Column(db.Integer)
+    test_time = db.Column(db.Float)
     
     pickle_obj = db.Column(db.LargeBinary) 
-    
+
     # TODO - need to define pickle object where to read from 
     # Alternative - store in a static space, and read from there using
     # a field in this database - this way skip the headache for now ...
@@ -59,7 +64,8 @@ class PredictionModel(db.Model):
 
     def from_dict(self,data):
         for each in ['accuracy','parameters','model_type',
-            'model','train_size','total_fit_time']:
+            'model','train_size','total_fit_time',
+            'train_pos','train_time','test_time','test_pos']:
             if each in data:
                 setattr(self,each,data[each])
             

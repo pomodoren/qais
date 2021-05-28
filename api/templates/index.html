@@ -16,45 +16,38 @@
     <link href="{{url_for('static',filename='bootstrap.min.css')}}" rel="stylesheet" crossorigin="anonymous">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
-     google.charts.load('current', {'packages':['line']});
-      google.charts.setOnLoadCallback(drawChart);
+     google.charts.load('current', {'packages':['line','bar']});
+    google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
 
       var data = new google.visualization.DataTable();
-      data.addColumn('number', 'Day');
-      data.addColumn('number', 'Guardians of the Galaxy');
-      data.addColumn('number', 'The Avengers');
-      data.addColumn('number', 'Transformers: Age of Extinction');
+      data.addColumn('number', 'Page');
+      data.addColumn('number', 'Accuracy');
 
-      data.addRows([
-        [1,  37.8, 80.8, 41.8],
-        [2,  30.9, 69.5, 32.4],
-        [3,  25.4,   57, 25.7],
-        [4,  11.7, 18.8, 10.5],
-        [5,  11.9, 17.6, 10.4],
-        [6,   8.8, 13.6,  7.7],
-        [7,   7.6, 12.3,  9.6],
-        [8,  12.3, 29.2, 10.6],
-        [9,  16.9, 42.9, 14.8],
-        [10, 12.8, 30.9, 11.6],
-        [11,  5.3,  7.9,  4.7],
-        [12,  6.6,  8.4,  5.2],
-        [13,  4.8,  6.3,  3.6],
-        [14,  4.2,  6.2,  3.4]
-      ]);
+      data.addRows({{page_accuracy}});
 
       var options = {
         chart: {
-          title: 'Box Office Earnings in First Two Weeks of Opening',
-          subtitle: 'in millions of dollars (USD)'
+          title: 'Does the classifier really learn?',
+          subtitle: 'understanding through accuracy change'
         }
       };
 
       var chart = new google.charts.Line(document.getElementById('linechart_material'));
-
       chart.draw(data, google.charts.Line.convertOptions(options));
-    }
+
+        var data = google.visualization.arrayToDataTable({{train_vs_test_pos|safe}});
+        var options = {
+          chart: {
+            title: 'What is the distribution of samples for run.',
+            subtitle: 'How many positive samples were in each batch.',
+          }
+        };
+
+        var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+      }
 
     </script>
 
@@ -127,68 +120,26 @@
 
     <main>
         <!-- ======= Contact Section ======= -->
-        <section id="research" style="background-color:lightgoldenrodyellow;">
+        <section id="research" >
             <br><br>
             <div class="container" data-aos="fade-up">
                 <div class="row">
-                    <div class="col-md-4">
-                        <div class="section-title">
-                            <h3>Promotion <span style="color:blue">Consistency</span> </h3>
-                        </div>
-                        <p>
-                            According to our models,
-                            your promotion process is <span class="badge" style="background-color:blue;">{{0}}%</span>
-                            consistent with the previous promotions, considering the following factors:
-                        </p>
-                        <p>
-                            <span class="badge" style="font-weight: bold;color:white;background-color: blue;">></span>
-                            Network Ability<br>
-                            <span class="badge" style="font-weight: bold;color:white;background-color: blue;">></span>
-                            Competence<br>
-                        </p>
-                        <br>
-                        <br><br>
-                    </div>
-                    <div class="col-md-8 mx-auto bg-white">
-                        <br> 
-                        <div id="linechart_material" style="width: 100%; max-height: 500px;min-height: 300px;"></div>
-                        
-                    </div>
-                    
+                    <div id="linechart_material" style="width: 100%; max-height: 500px;min-height: 300px;"></div>
                 </div>
                 <br><br>
             </div>
         </section>
-         <!-- ======= Contact Section ======= -->
-         <section id="research" style="background-color: lavenderblush;">
+        <hr>
+        <section id="research" >
             <br><br>
             <div class="container" data-aos="fade-up">
                 <div class="row">
-                    <div class="col-md-4">
-                        <div class="section-title">
-                            <h3>Continous <span style="color:blue">Insight</span> </h3>
-                        </div>
-                        <p>
-                            According to our <span class="badge" style="background-color:blue;">models</span>,
-                            your promotion process is <span class="badge" style="background-color:blue;">{{0}}%</span>
-                            consistent with the previous promotions, considering the following factors:
-                        </p>
-                        <p>
-                            <span class="badge" style="font-weight: bold;color:black;background-color: blue;">></span>
-                            Network Ability<br>
-                            <span class="badge" style="font-weight: bold;color:black;background-color: blue;">></span>
-                            Competence<br>
-                        </p>
-                        <br>
-                        <a class="btn btn-success" href="#"><i class="bi bi-gear-wide-connected"></i> More info?</a>
-                        <br><br><br><br>
-                    </div>
-                    <div class="col-md-8 mx-auto ">
-                        <div id="curve_chart" style="width: 100%; max-height: 500px"></div>
-                    </div>
+                    <div id="columnchart_material" style="width: 100%; max-height: 500px;min-height: 300px;"></div>
                 </div>
+                <br><br>
             </div>
         </section>
+ 
     </main>
 
     <footer class="text-muted py-5">

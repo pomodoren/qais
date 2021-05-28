@@ -9,7 +9,7 @@ import pickle
 
 # ML tasks
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import SGDClassifier
+from sklearn.linear_model import SGDClassifier, LogisticRegression
 
 app.app_context().push()
 
@@ -31,7 +31,7 @@ def run_model(pm_id):
     try:
         # create a model 
         if pm.page == 0:
-            model = SGDClassifier()
+            model = SGDClassifier(average=True)
         else:
             pm_previous = PredictionModel.query.get(pm_id-1)
             model = pickle.loads(pm_previous.pickle_obj)
@@ -47,14 +47,20 @@ def run_model(pm_id):
         dataset = df[['competence','network_ability','promoted']] # skip id
         X_vals = dataset.iloc[:, :-1].values
         y_vals = dataset.iloc[:, -1].values
-
         # if not first model, test with the same data
         if pm.page != 0:
+            
+            test_start = time.time()
             pm_previous.accuracy = model.score(X_vals, y_vals)
+            pm_previous.test_time = time.time() - test_start
+            pm_previous.test_pos = int(sum(y_vals))
             db.session.commit()
 
         # train model 
+        train_start = time.time()
         model.partial_fit(X_vals, y_vals, classes=[0,1])
+        pm.train_time = time.time() - train_start
+        pm.train_pos = int(sum(y_vals))
 
         # extract parameters
         model_description = describe_model(

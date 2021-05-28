@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: f01fa4f04031
+Revision ID: deddc5f63d28
 Revises: 
-Create Date: 2021-05-28 16:52:23.584206
+Create Date: 2021-05-28 18:05:42.563152
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'f01fa4f04031'
+revision = 'deddc5f63d28'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -36,7 +36,11 @@ def upgrade():
     sa.Column('model_type', sa.String(), nullable=True),
     sa.Column('model', sa.String(), nullable=True),
     sa.Column('train_size', sa.Integer(), nullable=True),
-    sa.Column('total_fit_time', sa.Float(), nullable=True),
+    sa.Column('train_pos', sa.Integer(), nullable=True),
+    sa.Column('train_time', sa.Float(), nullable=True),
+    sa.Column('test_pos', sa.Integer(), nullable=True),
+    sa.Column('test_time', sa.Float(), nullable=True),
+    sa.Column('pickle_obj', sa.LargeBinary(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_prediction_model_timestamp'), 'prediction_model', ['timestamp'], unique=False)

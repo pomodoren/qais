@@ -7,7 +7,7 @@ import os
 import json
 from redis import Redis
 import rq, pickle
-
+import pandas as pd
 from api.config import CONFIG
 
 migrate = Migrate()
@@ -32,7 +32,18 @@ migrate.init_app(app, db)
 
 @app.route('/', methods=['GET'])
 def home():
-    return render_template('index.html')
+    pred_models = PredictionModel.query.all()
+    vals = [[i.page,i.accuracy] for i in pred_models if i.accuracy]
+    train_vs_test_pos = [['Page','Train Time','Test Time']]\
+        +[
+            [i.page,i.train_time,i.test_time] 
+            for i in pred_models if i.accuracy
+        ]
+    return render_template(
+        'index.html', 
+        page_accuracy=vals, 
+        train_vs_test_pos=train_vs_test_pos
+    )
 
 @app.route('/api/v1/data', methods=['GET','POST'])
 def api_filter():
@@ -48,16 +59,17 @@ def api_filter():
                 set(i.keys()) != set(['id','competence','network_ability','promoted']) or\
                 len([j for j in i.values() if not isinstance(j, (int, float))]):
                 abort(400)
+        data_instances = []
         for i in json_data:
             try:
                 instance_ = Instance()
                 instance_.from_dict(i)
-                db.session.add(instance_)
-                db.session.commit()
+                data_instances.append(instance_)
             except Exception as e:
                 print(e)
                 abort(400)
-
+            db.session.add_all(data_instances)
+            db.session.commit()
         # process
         return jsonify({
             "status":"success"

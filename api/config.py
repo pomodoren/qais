@@ -21,8 +21,8 @@ class Config(object):
         basedir, "../data/database_migrations/" + ENV + ".db"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    DOCUMENT_PER_PAGE = 10
-    TRAIN_TEST_BATCH = 100
+    DOCUMENT_PER_PAGE = 100
+    TRAIN_TEST_BATCH = 1000
 
 class ProductionConfig(Config):
     DEBUG = False
