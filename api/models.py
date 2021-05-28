@@ -97,17 +97,20 @@ class PredictionModel(db.Model):
         # get last model and count of instances
         last_model = PredictionModel.query.order_by(PredictionModel.timestamp.desc()).first()
         instance_status = Instance.query.count()
-        
+        limit = current_app.config['TRAIN_TEST_BATCH']
+
         # check if no model inside
         if not last_model:
-            if instance_status > current_app.config['TRAIN_TEST_BATCH']:
+            if instance_status > limit :
                 create_and_run(page=0)
+            
         else:
             from_last_model = last_model.page * current_app.config['DOCUMENT_PER_PAGE']
-            if instance_status - from_last_model > current_app.config['TRAIN_TEST_BATCH']:
+            if instance_status - from_last_model > limit:
                 # where to start training
-                start_page = last_model.page + current_app.config['TRAIN_TEST_BATCH']/current_app.config['DOCUMENT_PER_PAGE'] 
+                start_page = last_model.page + limit/current_app.config['DOCUMENT_PER_PAGE'] 
                 create_and_run(page=start_page)
+
 
     def launch_task(self, name, description, *args, **kwargs):
         rq_job = current_app.task_queue.enqueue(

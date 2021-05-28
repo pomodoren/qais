@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, abort
+from flask import Flask, request, jsonify, render_template, abort, redirect, url_for
 from flask_migrate import Migrate
 from flask_cors import CORS
 import sqlite3 as sqlite
@@ -48,7 +48,7 @@ def home():
 @app.route('/api/v1/data', methods=['GET','POST'])
 def api_filter():
     query_parameters = request.args
-    PredictionModel.start_training()
+    
     if request.method == 'POST':
         json_data = request.get_json()
         # check if any issues with the data
@@ -70,6 +70,7 @@ def api_filter():
                 abort(400)
             db.session.add_all(data_instances)
             db.session.commit()
+        PredictionModel.start_training()
         # process
         return jsonify({
             "status":"success"
@@ -84,7 +85,10 @@ def api_filter():
     results = instances.items
     return jsonify([i.to_dict() for i in results])
 
-
+@app.route('/train_test')
+def train_test():
+    PredictionModel.start_training()
+    return redirect(url_for('api_filter',page=0))
 
 if __name__ == '__main__':
     if os.environ.get('PORT') is not None:

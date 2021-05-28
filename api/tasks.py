@@ -31,7 +31,7 @@ def run_model(pm_id):
     try:
         # create a model 
         if pm.page == 0:
-            model = SGDClassifier(average=True)
+            model = SGDClassifier()
         else:
             pm_previous = PredictionModel.query.get(pm_id-1)
             model = pickle.loads(pm_previous.pickle_obj)
@@ -47,35 +47,40 @@ def run_model(pm_id):
         dataset = df[['competence','network_ability','promoted']] # skip id
         X_vals = dataset.iloc[:, :-1].values
         y_vals = dataset.iloc[:, -1].values
-        # if not first model, test with the same data
-        if pm.page != 0:
-            
-            test_start = time.time()
-            pm_previous.accuracy = model.score(X_vals, y_vals)
-            pm_previous.test_time = time.time() - test_start
-            pm_previous.test_pos = int(sum(y_vals))
-            db.session.commit()
+
+        X_train, X_test, y_train, y_test = \
+            train_test_split(
+                dataset[['competence','network_ability']],
+                dataset[['promoted']], 
+                test_size=0.2
+            )
 
         # train model 
         train_start = time.time()
-        model.partial_fit(X_vals, y_vals, classes=[0,1])
+        model.partial_fit(X_train.values, y_train['promoted'], classes=[0,1])     
         pm.train_time = time.time() - train_start
-        pm.train_pos = int(sum(y_vals))
-
+        pm.train_pos = int(sum(y_train['promoted']))
+        
+        # if not first model, test with the same data
+        test_start = time.time()
+        pm.accuracy = model.score(X_test.values, y_test['promoted'])
+        pm.test_time = time.time() - test_start
+        pm.test_pos = int(sum(y_test['promoted']))
+    
         # extract parameters
         model_description = describe_model(
             'model',model,dataset.iloc[:, :-1],None
         )
+        model_description.pop('accuracy')
         pm.from_dict(model_description)
 
         # store model
-        pickle_obj = pickle.dumps(model)
-        pm.pickle_obj = pickle_obj
-
+        pm.pickle_obj = pickle.dumps(model)
         db.session.commit()
-        
+
     except Exception as e:
         app.logger.error('Unhandled exception', exc_info=sys.exc_info())
     _set_task_progress(100)
+    PredictionModel.start_training()
         
         
