@@ -38,7 +38,7 @@ def describe_model(
     values['model_name'] = model_name.lstrip(' ')
     values['accuracy'] = accuracy
     values['col_num'] =  X_train.shape[1]
-    values['features'] = str(list(X_train.columns))
+    values['features'] = list(X_train.columns)
     #values['parameters']
     #values['model_type']
     #values['model'] 

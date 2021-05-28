@@ -43,13 +43,14 @@ class PredictionModel(db.Model):
     instance_count = db.Column(db.Integer) 
 
     # specific
-    n_train = db.Column(db.Integer)
-    n_train_pos = db.Column(db.Integer)    
     accuracy = db.Column(db.Float)
-    accuracy_history = db.Column(db.JSON)
-    t0 = db.Column(db.DateTime)
-    runtime_history = db.Column(db.JSON)
+    parameters = db.Column(db.JSON)
+    model_type = db.Column(db.String) 
+    model = db.Column(db.String)
+    train_size = db.Column(db.Integer)
     total_fit_time = db.Column(db.Float)
+    
+    pickle_obj = db.Column(db.LargeBinary) 
     
     # TODO - need to define pickle object where to read from 
     # Alternative - store in a static space, and read from there using
@@ -57,10 +58,10 @@ class PredictionModel(db.Model):
     #pickle_obj = db.PickleType 
 
     def from_dict(self,data):
-        for each in ['n_train','n_train_pos','accuracy',
-            'accuracy_history','t0','runtime_history','total_fit_time']:
+        for each in ['accuracy','parameters','model_type',
+            'model','train_size','total_fit_time']:
             if each in data:
-                setattr(self,each,data[field])
+                setattr(self,each,data[each])
             
     @classmethod
     def start_training(cls):
@@ -76,24 +77,33 @@ class PredictionModel(db.Model):
             - store new model in db
         """ 
 
-        # get last model
-        last_model = PredictionModel.query.order_by(PredictionModel.timestamp.desc()).first()
-        # check if first time running a model
-        #if not last_model and Instance.query.count() > current_app.config['TRAIN_TEST_BATCH']:
-        print("Entered")
-        # create prediction model
-        new_model = PredictionModel()
-        new_model.page = 0
-        new_model.instance_count = current_app.config['TRAIN_TEST_BATCH']
-        db.session.add(new_model)
-        db.session.commit()
+        def create_and_run(page):
+            """internal method to not repeat yourself"""
+            # create prediction model
+            new_model = PredictionModel()
+            new_model.page = page
+            new_model.instance_count = current_app.config['TRAIN_TEST_BATCH']
+            db.session.add(new_model)
+            db.session.commit()
+            # run fitting
+            new_model.launch_task('run_model','partial fit the data')
 
-        new_model.launch_task('run_model','partial fit the data')
-        #else:
-        # print('skip')
+        # get last model and count of instances
+        last_model = PredictionModel.query.order_by(PredictionModel.timestamp.desc()).first()
+        instance_status = Instance.query.count()
+        
+        # check if no model inside
+        if not last_model:
+            if instance_status > current_app.config['TRAIN_TEST_BATCH']:
+                create_and_run(page=0)
+        else:
+            from_last_model = last_model.page * current_app.config['DOCUMENT_PER_PAGE']
+            if instance_status - from_last_model > current_app.config['TRAIN_TEST_BATCH']:
+                # where to start training
+                start_page = last_model.page + current_app.config['TRAIN_TEST_BATCH']/current_app.config['DOCUMENT_PER_PAGE'] 
+                create_and_run(page=start_page)
 
     def launch_task(self, name, description, *args, **kwargs):
-        print("launching")
         rq_job = current_app.task_queue.enqueue(
             "api.tasks." + name, self.id, *args, **kwargs
         )

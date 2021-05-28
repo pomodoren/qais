@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 38c464911733
+Revision ID: f01fa4f04031
 Revises: 
-Create Date: 2021-05-27 23:54:27.132661
+Create Date: 2021-05-28 16:52:23.584206
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '38c464911733'
+revision = 'f01fa4f04031'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -29,12 +29,13 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('timestamp', sa.DateTime(), nullable=True),
     sa.Column('archived', sa.Boolean(), nullable=True),
-    sa.Column('n_train', sa.Integer(), nullable=True),
-    sa.Column('n_train_pos', sa.Integer(), nullable=True),
+    sa.Column('page', sa.Integer(), nullable=True),
+    sa.Column('instance_count', sa.Integer(), nullable=True),
     sa.Column('accuracy', sa.Float(), nullable=True),
-    sa.Column('accuracy_history', sa.JSON(), nullable=True),
-    sa.Column('t0', sa.DateTime(), nullable=True),
-    sa.Column('runtime_history', sa.JSON(), nullable=True),
+    sa.Column('parameters', sa.JSON(), nullable=True),
+    sa.Column('model_type', sa.String(), nullable=True),
+    sa.Column('model', sa.String(), nullable=True),
+    sa.Column('train_size', sa.Integer(), nullable=True),
     sa.Column('total_fit_time', sa.Float(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )

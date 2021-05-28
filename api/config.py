@@ -18,7 +18,7 @@ class Config(object):
     LOCAL = os.environ.get("LOCAL") or "localhost:5000"
 
     SQLALCHEMY_DATABASE_URI =  os.environ.get("DATABASE_URL") or "sqlite:///" + os.path.join(
-        basedir, "database_migrations/" + ENV + ".db"
+        basedir, "../data/database_migrations/" + ENV + ".db"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DOCUMENT_PER_PAGE = 10

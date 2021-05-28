@@ -5,6 +5,7 @@ from api.models import db, Task, PredictionModel, Instance
 from api.pm_processing import describe_model
 from sqlalchemy import and_
 import pandas as pd 
+import pickle 
 
 # ML tasks
 from sklearn.model_selection import train_test_split
@@ -29,10 +30,14 @@ def run_model(pm_id):
     _set_task_progress(0)
     try:
         # create a model 
-        model = SGDClassifier()
+        if pm.page == 0:
+            model = SGDClassifier()
+        else:
+            pm_previous = PredictionModel.query.get(pm_id-1)
+            model = pickle.loads(pm_previous.pickle_obj)
 
         # extract the necessary instances to train on
-        starting_index = pm.page * app.config['TRAIN_TEST_BATCH']
+        starting_index = pm.page * app.config['DOCUMENT_PER_PAGE']
         ending_index = starting_index + app.config['TRAIN_TEST_BATCH']
         all_instances = Instance.query\
             .filter(Instance.id>=starting_index)\
@@ -40,15 +45,28 @@ def run_model(pm_id):
             .all()
         df = pd.DataFrame([i.to_dict() for i in all_instances])
         dataset = df[['competence','network_ability','promoted']] # skip id
-        X_train = dataset.iloc[:, :-1].values
-        y_train = dataset.iloc[:, -1].values
+        X_vals = dataset.iloc[:, :-1].values
+        y_vals = dataset.iloc[:, -1].values
+
+        # if not first model, test with the same data
+        if pm.page != 0:
+            pm_previous.accuracy = model.score(X_vals, y_vals)
+            db.session.commit()
 
         # train model 
-        model.partial_fit(X_train, y_train, classes=[0,1])
+        model.partial_fit(X_vals, y_vals, classes=[0,1])
 
         # extract parameters
-        print(describe_model('model',model,dataset.iloc[:, :-1],None))
+        model_description = describe_model(
+            'model',model,dataset.iloc[:, :-1],None
+        )
+        pm.from_dict(model_description)
 
+        # store model
+        pickle_obj = pickle.dumps(model)
+        pm.pickle_obj = pickle_obj
+
+        db.session.commit()
     except Exception as e:
         app.logger.error('Unhandled exception', exc_info=sys.exc_info())
     _set_task_progress(100)
